@@ -7,6 +7,7 @@ import argparse
 import os
 import scipy.io
 import numpy as np
+import matplotlib.pyplot as plt
 from methods import pilot_estimation, interpolation, equalizer
 from pipeline import decode, calculate_mse, calculate_ber
 
@@ -19,11 +20,12 @@ NOISE_LEVELS = ['no_noise', 'low_noise', 'high_noise']
 
 parser = argparse.ArgumentParser(description="Evaluate performance of specified methods.")
 
-parser.add_argument('--p', type=str, choices=PILOT_CHOICES, required=True, help='Pilot estimation method')
-parser.add_argument('--i', type=str, choices=INTERP_CHOICES, required=True, help='Interpolation method')
-parser.add_argument('--e', type=str, choices=EQUALIZER_CHOICES, required=True, help='Equalizer method')
-parser.add_argument('--d', type=int, required=True, choices=DATASET_CHOICES, help='Dataset Id')
-parser.add_argument('--n', type=str, required=True, choices=NOISE_LEVELS, help='Noise level for evaluation')
+parser.add_argument('-p', type=str, choices=PILOT_CHOICES, required=True, help='Pilot estimation method')
+parser.add_argument('-i', type=str, choices=INTERP_CHOICES, required=True, help='Interpolation method')
+parser.add_argument('-e', type=str, choices=EQUALIZER_CHOICES, required=True, help='Equalizer method')
+parser.add_argument('-d', type=int, required=True, choices=DATASET_CHOICES, help='Dataset Id')
+parser.add_argument('-n', type=str, required=True, choices=NOISE_LEVELS, help='Noise level for evaluation')
+parser.add_argument('--image', action='store_true', help='Display the recovered image')
 
 args = parser.parse_args()
 
@@ -107,6 +109,14 @@ if __name__ == "__main__":
     ber = calculate_ber(qpsk_estimations[:image_size[0] * image_size[1] // 2], true_symbols)
     mse = calculate_mse(qpsk_estimations[:image_size[0] * image_size[1] // 2], true_symbols)
     
+    if args.image:
+        image_bits = []
+        for sample in qpsk_estimations[:image_size[0] * image_size[1] // 2]:
+            imag_sign = int(np.sign(sample.imag))
+            real_sign = int(np.sign(sample.real))
+
+            image_bits.extend([(1 - imag_sign) // 2, (1 - real_sign) // 2])
+    
     pilot_method_name = {
         'naive': 'Naive',
         'kalman': 'Kalman Filter'
@@ -132,3 +142,8 @@ if __name__ == "__main__":
         f"BER: {ber}\n"
         f"MSE: {mse}"
     )
+    
+    image = (255 * np.reshape(np.array(image_bits), tuple(image_size))).astype(np.uint8).T
+    plt.imshow(image, cmap='gray')   # use 'gray' if it’s a grayscale image
+    plt.axis('off')
+    plt.show()    
