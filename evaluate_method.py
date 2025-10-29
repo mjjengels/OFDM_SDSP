@@ -130,7 +130,7 @@ if __name__ == "__main__":
     
     equalizer_method_name = {
         'zf': 'Zero-Forcing',
-        'mmse': 'MMMSE'
+        'mmse': 'MMSE'
     }
     
     print(
@@ -159,3 +159,4 @@ if __name__ == "__main__":
         image = (255 * np.reshape(np.array(image_bits), tuple(image_size))).astype(np.uint8).T
         plt.imshow(image, cmap='gray')   # use 'gray' if it’s a grayscale image
         plt.show()    
+
