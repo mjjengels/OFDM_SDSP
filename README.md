@@ -33,7 +33,7 @@ Available arguments (see `--help`):
 Example:
 
 ```
- python .\evaluate_method.py --p kalman --i wiener --e mmse --d 2 --n low_noise
+ python .\evaluate_method.py -p kalman -i wiener -e mmse -d 2 -n low_noise
 ```
 
 Example output:
@@ -72,3 +72,4 @@ styled_df = mse_df.style.apply(highlight_max, axis=0).apply(highlight_min, axis=
 # Or show absolute Bit Errors
 # styled_df = be_df.style.apply(highlight_max, axis=0).apply(highlight_min, axis=0)
 ```
+
