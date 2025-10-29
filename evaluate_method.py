@@ -143,7 +143,19 @@ if __name__ == "__main__":
         f"MSE: {mse}"
     )
     
-    image = (255 * np.reshape(np.array(image_bits), tuple(image_size))).astype(np.uint8).T
-    plt.imshow(image, cmap='gray')   # use 'gray' if it’s a grayscale image
-    plt.axis('off')
-    plt.show()    
+    if args.image:
+        plt.figure(figsize=(8, 8))
+        plt.title('Recovered Image')
+        plt.axis('off')
+        
+        # Reshape the image bits into the original image size
+        image_bits = []
+        for sample in qpsk_estimations[:image_size[0] * image_size[1] // 2]:
+            imag_sign = int(np.sign(sample.imag))
+            real_sign = int(np.sign(sample.real))
+
+            image_bits.extend([(1 - imag_sign) // 2, (1 - real_sign) // 2])
+
+        image = (255 * np.reshape(np.array(image_bits), tuple(image_size))).astype(np.uint8).T
+        plt.imshow(image, cmap='gray')   # use 'gray' if it’s a grayscale image
+        plt.show()    
